@@ -42,7 +42,7 @@ paths:
         422:
           $ref: "#/components/responses/UnprocessableEntity"
         500:
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/InternalError"
     get:
       description: List customers
       tags:
@@ -64,20 +64,20 @@ paths:
         - $ref: "#/components/parameters/size"
         - $ref: "#/components/parameters/sort"
         - $ref: "#/components/parameters/direction"
-    responses:
+      responses:
         200:
           description: Ok
           content:
             application/json:
               schema:
                 allOf:
-                - $ref: "#/components/schemas/Page"
-                - type: object
+                  - $ref: "#/components/schemas/Page"
+                  - type: object
                 properties:
                   content:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Customer"
+                      $ref: "#/components/schemas/CustomerSummary"
   /api/v1/customers/{customerId}:
     get:
       parameters:
@@ -132,7 +132,7 @@ paths:
         422:
           $ref: "#/components/responses/UnprocessableEntity"
         500:
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/InternalError"
     delete:
       parameters:
         - schema:
@@ -205,8 +205,8 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/ProblemDetail"
-    InternalServerError:
-      description: Internal Server error
+    InternalError:
+      description: Internal Server Error
       content:
         application/problem+json:
           schema:
@@ -315,6 +315,34 @@ components:
           example: "12321"
           nullable: false
           x-validation: "notBlank"
+    CustomerSummary:
+      type: object
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - phone
+        - archived
+      properties:
+        id:
+          type: string
+          example: "380d7e70-7942-4b8d-a0e9-b93d79aa6745"
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        email:
+          type: string
+          example: "johndoe@email.com"
+        phone:
+          type: string
+          example: "1191234564"
+        archived:
+          type: boolean
+          example: false
     CustomerInput:
       type: object
       required:
@@ -395,29 +423,29 @@ components:
         address:
           $ref: "#/components/schemas/Address"
     ProblemDetail:
-        type: object
-        required:
-          - status
-          - type
-        properties:
-          status:
-            type: integer
-            example: 400
-          type:
-            type: string
-            example: "/errors/invalid-date"
-          title:
-            type: string
-            example: "Invalid fields"
-          instance:
-            type: string
-            example: "/api/v1/customers"
-          detail:
-            type: string
-            example: "One or more fields are invalid"
-          fields:
-            type: object
-            description: Fields that caused the error
+      type: object
+      required:
+        - status
+        - type
+      properties:
+        status:
+          type: integer
+          example: 400
+        type:
+          type: string
+          example: "/errors/invalid-data"
+        title:
+          type: string
+          example: Invalid fields
+        instance:
+          type: string
+          example: /"api/v1/customers"
+        detail:
+          type: string
+          example: One or more fields are invalid
+        fields:
+          type: object
+          description: Fields that caused the error
     Page:
       type: object
       required:
